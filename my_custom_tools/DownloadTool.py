@@ -36,7 +36,8 @@ class DownloadPaperTool(BaseModel):
             if not pdf_url:
                 print(f"❌ Skipping paper with missing pdf_url: {title}")
                 continue
-            pdf_name = re.sub(r'[\\/*?:"<>|]', "", title) + ".pdf"
+            new_title = title.replace(" ", "_")
+            pdf_name = re.sub(r'[\\/*?:"<>|]', "", new_title) + ".pdf"
             pdf_path = target_path / pdf_name
             if not pdf_path.exists():
                 count += 1
