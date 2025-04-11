@@ -8,6 +8,23 @@ from portia.cli import CLIExecutionHooks
 from portia import *
 import re
 
+def strip_latex(text: str) -> str:
+    # Remove all LaTeX-style commands and math blocks
+    text = re.sub(r"\$.*?\$", "", text)  # remove inline math
+    text = re.sub(r"\\[a-zA-Z]+\{.*?\}", "", text)  # remove commands like \text{...}
+    text = re.sub(r"\\[a-zA-Z]+", "", text)  # remove commands like \mathrm
+    text = re.sub(r"[^a-zA-Z0-9\s\-]", "", text)  # keep letters/numbers/spaces/hyphens
+    return text.strip()
+
+def make_safe_filename(title: str, max_length: int = 25) -> str:
+    # Remove illegal characters
+    cleaned = re.sub(r'[\\/*?:"<>|]', "", title)
+    # Replace spaces with underscores
+    cleaned = cleaned.replace(" ", "_")
+    # Trim and limit length
+    cleaned = cleaned.strip()[:max_length]
+    return cleaned + ".pdf"
+
 class DownloadPaperSchema(Tool):
     """Input schema for DownloadPaper Tool"""
     papers: list[dict[str, str]] = Field(
@@ -31,13 +48,12 @@ class DownloadPaperTool(BaseModel):
         target_path.mkdir(parents=True, exist_ok=True)
         count = 0
         for paper in papers:
-            title = paper["title"]
+            title = strip_latex(paper["title"])
             pdf_url = paper["link"]
             if not pdf_url:
                 print(f"❌ Skipping paper with missing pdf_url: {title}")
                 continue
-            new_title = title.replace(" ", "_")
-            pdf_name = re.sub(r'[\\/*?:"<>|]', "", new_title) + ".pdf"
+            pdf_name = make_safe_filename(re.sub(r'[\\/*?:"<>|]', "", title)) + ".pdf"
             pdf_path = target_path / pdf_name
             if not pdf_path.exists():
                 count += 1
