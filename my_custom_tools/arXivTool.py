@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from typing import Generic, TypeVar, List
 
 class ArXivToolSchema(Tool):
-    """Input schema for SearchArXiv Tool"""
+    """Input schema for ArXiv Tool"""
     topic: str = Field(..., description="The topic to learn about")
 
 # Step 2: Define the Tool
@@ -51,7 +51,3 @@ class ArXivTool(Tool[list[dict[str, str]]]):
             papers.append(paper)
 
         return papers
-    
-
-
-    
