@@ -32,9 +32,6 @@ class DownloadPaperSchema(BaseModel):
         description="A list of dicts, each with 'title', 'link', and 'summary'."
     )
 
-    print("DownloadPaperSchema initialized")
-    print("papers:", papers)
-
 class DownloadPaperTool(Tool[str]):
     """Download the given papers from urls and create the papers folder."""
 
