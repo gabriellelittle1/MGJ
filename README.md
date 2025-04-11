@@ -12,4 +12,6 @@ Project Goal:
 
   It then asks the user, do you want a lesson on subtopic "xyz"? And the user decides whether or not to take a lesson, which we want to then ask - what is your preferred method of learning - video (youtube) , podcast (check for podcasts? then generate?), reading (find resource or generate resource) etc.
 
-  Then, ask if they want to be quizzed on the topic (whether or not they had a lesson). If they didn't have a lesson
+  Then, ask if they want to be quizzed on the topic (whether or not they had a lesson). If they didn't have a lesson, and they did not do well on the quiz, then ask if they want a lesson. 
+
+  Then once all lessons are finished, summarise the current research landscape (including what the papers are about, where the gaps are, open questions, and maybe pose some thoughtful questions). 
