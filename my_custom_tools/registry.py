@@ -5,6 +5,8 @@ from my_custom_tools.arXivTool import ArXivTool
 from my_custom_tools.DownloadTool import DownloadPaperTool
 from my_custom_tools.PDFReaderTool import PDFReaderTool
 from my_custom_tools.TopicSelectorTool import TopicSelectorTool
+from my_custom_tools.NotionTool import NotionTool
+
 
 custom_tool_registry = InMemoryToolRegistry.from_local_tools(
     [
@@ -12,5 +14,6 @@ custom_tool_registry = InMemoryToolRegistry.from_local_tools(
         DownloadPaperTool(),
         PDFReaderTool(),
         TopicSelectorTool(),
+        NotionTool(),
     ],
 )
