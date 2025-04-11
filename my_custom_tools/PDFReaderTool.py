@@ -21,7 +21,9 @@ class PDFReaderTool(Tool[dict[str, str]]):
 
     def run(self, ctx: ToolRunContext) -> dict[str, str]:
         """Extracts and returns full text from all PDFs in the ./papers folder."""
-        papers_dir = Path(__file__).parent / "papers"
+        
+        papers_dir = Path.cwd() / "fake_papers"
+
         if not papers_dir.exists() or not papers_dir.is_dir():
             raise ToolHardError("The 'papers/' folder does not exist.")
 
@@ -40,12 +42,18 @@ class PDFReaderTool(Tool[dict[str, str]]):
         return texts
 
     def read_pdf(self, file_path: Path) -> str:
-        """Extracts and cleans text from a PDF file."""
+        """Extracts and cleans text from a PDF file, stopping before References/Bibliography."""
         text = []
         with fitz.open(file_path) as doc:
             for page_num, page in enumerate(doc):
                 page_text = page.get_text("text")
                 cleaned_text = self._remove_arxiv_footer(page_text)
+
+                # Check for 'References' or 'Bibliography' section header
+                # if self._is_bibliography_page(cleaned_text):
+                #     print(f"Stopping at page {page_num + 1} (found References section).")
+                #     break
+
                 text.append(f"--- Page {page_num + 1} ---\n{cleaned_text.strip()}")
         return "\n\n".join(text)
 
@@ -56,3 +64,14 @@ class PDFReaderTool(Tool[dict[str, str]]):
             line for line in lines
             if "arxiv" not in line.lower() and "preprint" not in line.lower()
         )
+    
+    def _is_bibliography_page(self, text: str) -> bool:
+        """Returns True if the page looks like it's starting the bibliography or references."""
+        lowered = text.lower()
+        # Check if 'references' or 'bibliography' is a standalone word early in the text
+        return (
+            "references\n" in lowered
+            or lowered.strip().startswith("references")
+            or lowered.strip().startswith("bibliography")
+        )
+    
