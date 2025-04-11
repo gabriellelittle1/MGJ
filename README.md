@@ -15,3 +15,29 @@ Project Goal:
   Then, ask if they want to be quizzed on the topic (whether or not they had a lesson). If they didn't have a lesson, and they did not do well on the quiz, then ask if they want a lesson. 
 
   Then once all lessons are finished, summarise the current research landscape (including what the papers are about, where the gaps are, open questions, and maybe pose some thoughtful questions). 
+
+
+
+Tools and Workflow so far: 
+
+  1. Input topic and number of papers.
+  2. ArXivTool finds papers.
+  3. DownloadPaperTool downloads papers.
+  4. PDFReaderTool reads the papers, and finds subtopics.
+
+Next Steps: 
+  5. TopicPickerTool allows user to choose which topics to have lessons on. 
+  6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it. 
+
+
+Instructions for setting up parent page for Notion API: 
+
+1. Create Integration with Notion: https://www.notion.so/profile/integrations
+   - Choose your Workspace (making sure you are the owner) and add a name.
+2. Get API key from the configuration page (Internal Integration Secret) and it it to the env file. 
+3. Create a new page in your workspace.
+  - Click on the three dots on the top right of the page, and scroll to "Connections".
+  - Hover over "Connections", then type the name of the Integration into the searchbar, and give permission.
+4. Get the ID of the page: 
+  - If the URL is https://www.notion.so/1d26ccbbecba807587c1d438baa16104
+  - The ID is 1d26ccbbecba807587c1d438baa16104
