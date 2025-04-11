@@ -22,7 +22,7 @@ class PDFReaderTool(Tool[dict[str, str]]):
     def run(self, ctx: ToolRunContext) -> dict[str, str]:
         """Extracts and returns full text from all PDFs in the ./papers folder."""
         
-        papers_dir = Path.cwd() / "fake_papers"
+        papers_dir = Path.cwd() / "papers" #"fake_papers"
 
         if not papers_dir.exists() or not papers_dir.is_dir():
             raise ToolHardError("The 'papers/' folder does not exist.")

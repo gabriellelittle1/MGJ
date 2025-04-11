@@ -1,7 +1,7 @@
 import os
 import requests
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, ClassVar
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from portia.cli import CLIExecutionHooks
@@ -25,23 +25,28 @@ def make_safe_filename(title: str, max_length: int = 25) -> str:
     cleaned = cleaned.strip()[:max_length]
     return cleaned + ".pdf"
 
-class DownloadPaperSchema(Tool):
-    """Input schema for DownloadPaper Tool"""
-    papers: list[dict[str, str]] = Field(
+class DownloadPaperSchema(BaseModel):
+    """Input schema for DownloadPaperTool."""
+    papers: List[Dict[str, str]] = Field(
         ..., 
-        description="A list of dicts, each with 'title' and 'pdf_url'."
+        description="A list of dicts, each with 'title', 'link', and 'summary'."
     )
 
-class DownloadPaperTool(BaseModel):
+    print("DownloadPaperSchema initialized")
+    print("papers:", papers)
+
+class DownloadPaperTool(Tool[str]):
     """Download the given papers from urls and create the papers folder."""
 
-    id: str = "download_tool"
-    name: str = "download Tool"
-    description: str = "Download the papers from the given urls and create the papers folder."
+    id: ClassVar[str] = "download_tool"
+    name: ClassVar[str] = "download Tool"
+    description: ClassVar[str] = "Download the papers from the given urls and create the papers folder."
     args_schema: type[BaseModel] = DownloadPaperSchema
-    output_schema: tuple[str, str] = ("str", "A confirmation message indicating success.")
+    output_schema: ClassVar[tuple[str, str]] = ("str", "A confirmation message indicating success.")
 
     def run(self, context: ToolRunContext, papers: List[Dict[str, str]]) -> str:
+
+        print("DownloadPaperTool initialized")
 
         folder_name = "papers"
         target_path = Path(folder_name)
@@ -53,7 +58,7 @@ class DownloadPaperTool(BaseModel):
             if not pdf_url:
                 print(f"❌ Skipping paper with missing pdf_url: {title}")
                 continue
-            pdf_name = make_safe_filename(re.sub(r'[\\/*?:"<>|]', "", title)) + ".pdf"
+            pdf_name = make_safe_filename(re.sub(r'[\\/*?:"<>|]', "", title))
             pdf_path = target_path / pdf_name
             if not pdf_path.exists():
                 count += 1
