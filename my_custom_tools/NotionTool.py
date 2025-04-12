@@ -10,6 +10,7 @@ from notion_client import Client
 import os
 import openai
 import re
+from google import genai
 
 class NotionToolSchema(BaseModel):
     """Input schema for ArXiv Tool"""
@@ -126,6 +127,25 @@ class NotionTool(Tool[List[Dict[str, str]]]):
         )
 
         content = response.choices[0].message.content.strip()
+
+        gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+        verify_prompt = (
+            "You are a factual checker for educational content.\n"
+            "Your job is to read the following lesson and correct any factual errors, math mistakes, or misleading information.\n"
+            "Do NOT alter the structure, formatting, section headers, or LaTeX math delimiters (\\( ... \\)).\n"
+            "Keep bullet points, numbering, and headings exactly as they are.\n"
+            "If the lesson is already correct, return it unchanged.\n\n"
+            "Return ONLY the revised lesson text — no commentary, explanation, or summary.\n\n"
+            f"{content}"
+        )
+
+        revision = gemini_client.models.generate_content(
+            model="gemini-2.0-flash", contents=verify_prompt
+        )
+
+        content = revision.text.strip() 
+        
         blocks = []
         section = None
 
