@@ -33,9 +33,11 @@ Tools and Workflow so far:
   7. YouTubeTool optionally adds links to 3 videos on the subtopics (on each page). 
 
 Next Steps: 
-  7. Quiz for each topic with some form of Gameification. 
-  8. Front end
-  9. Much Cooler lessons with multimodal learning - podcast creation 
+  1. Page for the paper, with the paper broken down and explained using the concepts already explained.
+  2. Quiz for each topic with some form of Gameification. 
+  3. Front end
+  4. Much Cooler lessons with multimodal learning - recommended reading, podcasts, mini project suggestions, diagrams
+  5. Do we want optional image inputs - potentially for 
 
 Instructions for Google API: 
 - Remember that we require permission to use the Youtube API 
