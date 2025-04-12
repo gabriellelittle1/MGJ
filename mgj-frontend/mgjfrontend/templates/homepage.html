@@ -5,6 +5,8 @@
 <h1>MGJ AI Research Assistant</h1>
 <p>Help with learning</p>
 
+
+
 <style>
     .button {
       border: none;
@@ -31,9 +33,21 @@
     }
 </style>
 
-<body>
-    <button class="button button1">Green</button>
-</body>
+<form method="post">
+    {% csrf_token %}
+    <label>Enter a value:</label>
+    <input type="text" name="input_text" required><br><br>
+  
+    <label><input type="checkbox" name="option1"> Option 1</label><br>
+    <label><input type="checkbox" name="option2"> Option 2</label><br><br>
+  
+    <button class="button button1" type="submit">Run Notebook</button>
+  </form>
+  
+  {% if output %}
+    <h2>Notebook Output:</h2>
+    <pre>{{ output }}</pre>
+  {% endif %}
 
 </body>
 </html>
