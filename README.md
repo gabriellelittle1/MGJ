@@ -1,15 +1,21 @@
-# MGJ
-Github for Encode AI Hackathon Project
+# ExplAIn 
+
+## Project Idea and Overview
+
+ExplAIn is an intelligent learning assistant built using the Portia toolkit that transforms complex academic papers into structured, personalized learning experiences.
+
+Have you ever started reading a paper, only to find yourself falling down a rabbit hole of Wikipedia pages, YouTube videos, and textbook chapters—just to grasp the basics? ExplAIn streamlines that entire process.
+
+You can provide it with a research paper—or simply a topic, and it will find a relevant one for you. From there, ExplAIn identifies the key concepts necessary for deep comprehension and asks you which areas you'd like to explore. It then generates targeted lessons for each concept, including curated videos, textbook references, Wikipedia links, and interactive quizzes.
+
+Once you've built a solid foundation, ExplAIn returns to the original paper and explains it in a clear, digestible format—grounded in your personalized knowledge path. The result is a seamless journey from confusion to clarity, so you can focus on learning instead of searching.
+
+## How we used Portia AI
+
+### Custom Tools
 
 
-Plan for Saturday Morning;
-- Josh Learning Pages Content + Some kind of verification of information.
-- Malini Front End. 
-
-
-- Run "conda env create -f environment.yaml" to create the environment from this repository
-- Then activate with "conda activate RA"
-
+## Detailed Workflow
 
 Project Goal: 
 
