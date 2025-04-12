@@ -7,8 +7,7 @@ from pydantic import BaseModel, Field
 from typing import Generic, TypeVar, List, ClassVar, Dict, Literal
 from notion_client import Client
 import os
-load_dotenv(override=True)
-
+from my_custom_tools.utils import truncate_at_sentence
 
 class YouTubeToolSchema(BaseModel): 
 
@@ -124,7 +123,7 @@ class YouTubeTool(Tool[None]):
                                 {
                                     "type": "text",
                                     "text": {
-                                        "content": description[:200] + "...",
+                                        "content": truncate_at_sentence(description, 300) + "...",
                                     },
                                     "annotations": {
                                         "color": "gray"

@@ -1,57 +1,45 @@
-from typing import ClassVar, List, Union
+from typing import ClassVar, List, Optional
 from pydantic import BaseModel, Field
 from portia import Tool, ToolRunContext
-import re
+from portia.clarification import InputClarification  # <- This is what you use!
 
 
 class TopicSelectorToolSchema(BaseModel):
-    raw_topics: Union[str, List[str]] = Field(
-        ..., description="List of topics (numbered or unnumbered) to prompt the user for selection."
+    raw_topics: List[str] = Field(..., description="List of topics to choose from")
+    selected_indices: Optional[str] = Field(
+        default=None,
+        description="Comma-separated topic numbers (e.g. '1, 3, 5')"
     )
-
 
 class TopicSelectorTool(Tool[List[str]]):
     id: ClassVar[str] = "topic_selector_tool"
     name: ClassVar[str] = "Topic Selector Tool"
-    description: ClassVar[str] = "Prompts the user to choose from a list of topics."
+    description: ClassVar[str] = "Prompts the user to choose topics by number"
     args_schema = TopicSelectorToolSchema
-    output_schema: ClassVar[tuple[str, str]] = ("list", "List of user-selected topics")
+    output_schema: ClassVar[tuple[str, str]] = ("list", "The topics selected by the user")
 
-    def run(self, ctx: ToolRunContext, raw_topics: Union[str, List[str]]) -> List[str]:
-        if isinstance(raw_topics, str):
-            topics = self._parse_lines(raw_topics)
-        else:
-            topics = raw_topics
+    def run(
+        self,
+        ctx: ToolRunContext,
+        raw_topics: List[str],
+        selected_indices: Optional[str] = None
+    ) -> List[str] | InputClarification:
 
-        if not topics:
-            raise ValueError("No topics to choose from.")
+        if selected_indices is not None:
+            try:
+                indices = [int(i.strip()) - 1 for i in selected_indices.split(",")]
+                selected = [raw_topics[i] for i in indices if 0 <= i < len(raw_topics)]
+                return selected
+            except Exception as e:
+                raise ValueError(f"Invalid input: {e}")
 
-        clean_topics = [self._clean_topic(t) for t in topics]
+        numbered_list = "\n".join(f"{i+1}. {topic}" for i, topic in enumerate(raw_topics))
 
-        print("\n📚 Please choose one or more topics to learn about:")
-        for i, topic in enumerate(clean_topics, 1):
-            print(f"{i}. {topic}")
-
-        choice_str = input("Enter topic numbers separated by commas (e.g. 1,3,4):\n")
-        try:
-            indices = [int(i.strip()) - 1 for i in choice_str.split(",")]
-            selected = [clean_topics[i] for i in indices if 0 <= i < len(clean_topics)]
-            return selected
-        except Exception as e:
-            raise ValueError(f"Invalid input: {e}")
-
-
-    def _parse_lines(self, text: str) -> List[str]:
-        lines = [line.strip() for line in text.strip().splitlines() if line.strip()]
-        parsed = []
-        for line in lines:
-            if "." in line:
-                _, after = line.split(".", 1)
-                parsed.append(after.strip())
-            else:
-                parsed.append(line)
-        return parsed
-    
-    def _clean_topic(self, topic: str) -> str:
-        return re.sub(r"^\s*\d+[\.\)]\s*", "", topic)
-
+        return InputClarification(
+            plan_run_id=ctx.plan_run_id,
+            argument_name="selected_indices",
+            user_guidance=(
+                "Please enter the numbers of the topics you'd like to learn about, "
+                "separated by commas (e.g. 1, 3, 5):\n\n" + numbered_list
+            ),
+        )
