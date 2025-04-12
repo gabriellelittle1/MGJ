@@ -1,4 +1,4 @@
-# ExplAIn 
+# ExplAIn
 
 ## Project Idea and Overview
 
@@ -13,20 +13,16 @@ Once you've built a solid foundation, ExplAIn returns to the original paper and 
 ## How we used Portia AI
 
 ### Custom Tools
-
+* ArXivTool: _Finds papers from arXiv using the arXiv API, given a topic._
+* DownloadTool: _Download papers given urls._
+* PDFReaderTool: _Reads file and returns it without citations._
+* TopicSelectorTool: _Allows the user to choose which topics from topics found._
+* NotionTool: _Uses the Notion API to create and populate Notion pages with lessons. Includes an information verification step._
+* RecReadTool: _Finds wiki link and textbook urls related to the topic and adds to the Notion pages._
+* YouTubeTool: _Finds YouTube urls related to the topic and adds to the Notion pages._
+* QuizTool: _Creates custom quiz for each topic based on the lesson._
 
 ## Detailed Workflow
-
-Project Goal: 
-
-  Our goal is to create an agentic workflow using Portia that acts as a Research Assistant / Tutor. The user will input a topic and the first agent will find the most relevant / recent papers in that area. It then downloads the papers, and finds subtopics in the papers that it is necessary for the user to understand in order to understand the paper in depth. 
-
-  It then asks the user, do you want a lesson on subtopic "xyz"? And the user decides whether or not to take a lesson, which we want to then ask - what is your preferred method of learning - video (youtube) , podcast (check for podcasts? then generate?), reading (find resource or generate resource) etc.
-
-  Then, ask if they want to be quizzed on the topic (whether or not they had a lesson). If they didn't have a lesson, and they did not do well on the quiz, then ask if they want a lesson. 
-
-  Then once all lessons are finished, summarise the current research landscape (including what the papers are about, where the gaps are, open questions, and maybe pose some thoughtful questions). 
-
 
 Tools and Workflow so far: 
 
@@ -38,16 +34,11 @@ Tools and Workflow so far:
   6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it (while using a secondary LLM to check if output is accurate).
   7. YouTubeTool optionally adds links to 3 videos on the subtopics (on each page). 
 
-Next Steps: 
-  1. Page for the paper, with the paper broken down and explained using the concepts already explained.
-  2. Quiz for each topic with some form of Gameification. 
-  3. Front end
-  4. Much Cooler lessons with multimodal learning - recommended reading, podcasts, mini project suggestions, diagrams
-  5. Do we want optional image inputs - potentially for 
+## API Instructions 
 
-Instructions for Google API: 
-- Remember that we require permission to use the Youtube API 
-Instructions for setting up parent page for Notion API: 
+### OpenAI API 
+
+### Notion API 
 
 1. Create Integration with Notion: https://www.notion.so/profile/integrations
    - Choose your Workspace (making sure you are the owner) and add a name.
@@ -58,3 +49,13 @@ Instructions for setting up parent page for Notion API:
 4. Get the ID of the page: 
   - If the URL is https://www.notion.so/1d26ccbbecba807587c1d438baa16104
   - The ID is 1d26ccbbecba807587c1d438baa16104
+
+### Google API
+
+Steps: 
+1. Go to https://cloud.google.com/apis
+
+Instructions for Google API: 
+- Remember that we require permission to use the Youtube API 
+Instructions for setting up parent page for Notion API: 
+
