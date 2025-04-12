@@ -34,7 +34,8 @@ Tools and Workflow so far:
   3. DownloadPaperTool downloads papers.
   4. PDFReaderTool reads the papers, and finds subtopics.
   5. TopicPickerTool allows user to choose which topics to have lessons on.
-  6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it. 
+  6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it.
+  7. YouTubeTool optionally adds links to 3 videos on the subtopics (on each page). 
 
 
 Next Steps: 
@@ -43,7 +44,8 @@ Next Steps:
   9. Much Cooler lessons with multimodal learning - podcast creation + youtube finding + 
 
 
-
+Instructions for Google API: 
+- Remember that we require permission to use the Youtube API 
 Instructions for setting up parent page for Notion API: 
 
 1. Create Integration with Notion: https://www.notion.so/profile/integrations
