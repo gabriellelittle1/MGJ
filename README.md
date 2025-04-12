@@ -2,6 +2,15 @@
 Github for Encode AI Hackathon Project
 
 
+Plan for Saturday Morning;
+- Be at Encode at 9 am.
+- Chain up to Notion Board.
+- Josh, follow instructions for Notion setup and try running on his.
+- Gabrielle Youtube thing.
+- Josh Learning Pages Content + Some kind of verification of information.
+- Malini Front End. 
+
+
 - Run "conda env create -f environment.yaml" to create the environment from this repository
 - Then activate with "conda activate RA"
 
@@ -28,6 +37,10 @@ Tools and Workflow so far:
 Next Steps: 
   5. TopicPickerTool allows user to choose which topics to have lessons on. 
   6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it. 
+  7. Quiz for each topic with some form of Gameification. 
+  8. FRONT END!! 
+  9. Much Cooler lessons with multimodal learning - podcast creation + youtube finding + 
+
 
 
 Instructions for setting up parent page for Notion API: 
