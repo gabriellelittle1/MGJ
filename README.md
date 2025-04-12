@@ -3,10 +3,6 @@ Github for Encode AI Hackathon Project
 
 
 Plan for Saturday Morning;
-- Be at Encode at 9 am.
-- Chain up to Notion Board.
-- Josh, follow instructions for Notion setup and try running on his.
-- Gabrielle Youtube thing.
 - Josh Learning Pages Content + Some kind of verification of information.
 - Malini Front End. 
 
@@ -26,7 +22,6 @@ Project Goal:
   Then once all lessons are finished, summarise the current research landscape (including what the papers are about, where the gaps are, open questions, and maybe pose some thoughtful questions). 
 
 
-
 Tools and Workflow so far: 
 
   1. Input topic and number of papers.
@@ -37,12 +32,10 @@ Tools and Workflow so far:
   6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it.
   7. YouTubeTool optionally adds links to 3 videos on the subtopics (on each page). 
 
-
 Next Steps: 
   7. Quiz for each topic with some form of Gameification. 
-  8. FRONT END!! 
-  9. Much Cooler lessons with multimodal learning - podcast creation + youtube finding + 
-
+  8. Front end
+  9. Much Cooler lessons with multimodal learning - podcast creation 
 
 Instructions for Google API: 
 - Remember that we require permission to use the Youtube API 
