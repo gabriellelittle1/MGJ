@@ -43,8 +43,6 @@ class DownloadPaperTool(Tool[str]):
 
     def run(self, context: ToolRunContext, papers: List[Dict[str, str]]) -> str:
 
-        print("DownloadPaperTool initialized")
-
         folder_name = "papers"
         target_path = Path(folder_name)
         target_path.mkdir(parents=True, exist_ok=True)
