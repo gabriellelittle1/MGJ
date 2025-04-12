@@ -32,6 +32,12 @@ class NotionTool(Tool[str]):
     def run(self, context: ToolRunContext, topics: list[str]) -> str:
         
         """Run the Notion Tool."""
+
+        notion_api_key = os.getenv(("NOTION_API_KEY"))
+        notion_parent_id = os.getenv("NOTION_PARENT_ID")
+
+        notion = Client(auth=notion_api_key)
+
         notion.pages.update(page_id=notion_parent_id,
         properties = {
             "title": [
