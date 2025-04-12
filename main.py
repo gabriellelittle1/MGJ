@@ -17,25 +17,22 @@ notion_parent_id = os.getenv("NOTION_PARENT_ID")
 # Initialize the Notion client
 notion = Client(auth=notion_api_key)
 
-def run_RAI(topic, video_preference = False, rec_reading_preference = False, number_of_videos = 2):
+topic = "Using LLMs for Interior Design"
+constraints = []
+video_preference = False
+rec_reading_preference = False
+ready_to_proceed = False
 
+def planner(topic, constraints, video_preference = False, rec_reading_preference = False):
+    
+    my_config = Config.from_default()
+    complete_tool_registry = PortiaToolRegistry(my_config) + custom_tool_registry
 
-  my_config = Config.from_default()
-  complete_tool_registry = PortiaToolRegistry(my_config) + custom_tool_registry
-
-  portia = Portia(config = my_config,
+    portia = Portia(config = my_config,
                   tools = complete_tool_registry,
                   execution_hooks=CLIExecutionHooks(),)
 
-
-  constraints = []
-
-  # topic = "Using LLMs for Interior Design"
-  # number_of_papers = 1
-  # video_preference = False
-  # number_of_videos = 2
-
-  task = (
+    task = (
             lambda : f"""You are a research assistant running these tasks: 
                       - Find and download a paper on the topic of {topic} using the ArXivTool. 
                       - Run the PDFReaderTool to extract the full text from the pdfs in the local folder.
@@ -52,31 +49,44 @@ def run_RAI(topic, video_preference = False, rec_reading_preference = False, num
                       """
 
         )
+    
+    # Iterate on the plan with the user until they are happy with it
+    with execution_context(end_user_id="learning_enthusiast",):
+        plan = portia.plan(task())
+        print("\nHere are the steps in the generated plan:")
+        [print(step.model_dump_json(indent=2)) for step in plan.steps]
 
+        return plan
+  
 
-  # Iterate on the plan with the user until they are happy with it
-  with execution_context(end_user_id="learning_enthusiast",):
-      plan = portia.plan(task())
-      print("\nHere are the steps in the generated plan:")
-      [print(step.model_dump_json(indent=2)) for step in plan.steps]
-      ready_to_proceed = False
-      while not ready_to_proceed:
-          user_input = input("Are you happy with the plan? (y/n):\n")
-          if user_input == "y":
-              ready_to_proceed = True
-          else:
-              user_input = input("Any additional guidance for the planner?:\n")
-              constraints.append(user_input)
-              plan = portia.plan(task())
-              print("\nHere are the updated steps in the plan:")
-              [print(step.model_dump_json(indent=2)) for step in plan.steps]
+def run_RAI(plan):
 
-      # Execute the plan
-      print("\nThe plan will now be executed. Please wait...")
-      run = portia.run_plan(plan)
+  my_config = Config.from_default()
+  complete_tool_registry = PortiaToolRegistry(my_config) + custom_tool_registry
+
+  portia = Portia(config = my_config,
+                  tools = complete_tool_registry,
+                  execution_hooks=CLIExecutionHooks(),)
+  
+  print("\nThe plan will now be executed. Please wait...")
+  run = portia.run_plan(plan)
       
-      if run.state != PlanRunState.COMPLETE:
-          raise Exception(
-              f"Plan run failed with state {run.state}. Check logs for details."
-          )
+  if run.state != PlanRunState.COMPLETE:
+      raise Exception(
+          f"Plan run failed with state {run.state}. Check logs for details."
+      )
   return 
+
+plan = planner(topic, constraints, video_preference, rec_reading_preference)
+while not ready_to_proceed:
+  user_input = input("Are you happy with the plan? (y/n):\n")
+  if user_input == "y":
+      ready_to_proceed = True
+  else:
+      user_input = input("Any additional guidance for the planner?:\n")
+      constraints.append(user_input)
+      plan = planner(topic, constraints, video_preference, rec_reading_preference)
+      print("\nHere are the updated steps in the plan:")
+      [print(step.model_dump_json(indent=2)) for step in plan.steps]
+
+run_RAI(plan)
