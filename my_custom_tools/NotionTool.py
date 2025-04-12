@@ -10,6 +10,8 @@ from notion_client import Client
 import os
 import openai
 import re
+import google.generativeai as genai
+
 
 class NotionToolSchema(BaseModel):
     """Input schema for ArXiv Tool"""
@@ -126,6 +128,34 @@ class NotionTool(Tool[List[Dict[str, str]]]):
         )
 
         content = response.choices[0].message.content.strip()
+
+        api_key = os.getenv("GEMINI_API_KEY")
+        genai.configure(api_key=api_key)
+
+        generation_config = genai.types.GenerationConfig(
+            temperature=0.2
+        )
+
+        model_name = "gemini-2.0-flash" 
+        model = genai.GenerativeModel(
+            model_name=model_name,
+            generation_config=generation_config,
+        )
+
+        verify_prompt = (
+            "You are a factual checker for educational content.\n"
+            "Your job is to read the following lesson and correct any factual errors, math mistakes, or misleading information.\n"
+            "Do NOT alter the structure, formatting, section headers, or LaTeX math delimiters (\\( ... \\)).\n"
+            "Keep bullet points, numbering, and headings exactly as they are.\n"
+            "If the lesson is already correct, return it unchanged.\n\n"
+            "Return ONLY the revised lesson text — no commentary, explanation, or summary.\n\n"
+            f"{content}"
+        )
+
+        revision = model.generate_content(verify_prompt)
+
+        content = revision.text.strip() 
+        
         blocks = []
         section = None
 
