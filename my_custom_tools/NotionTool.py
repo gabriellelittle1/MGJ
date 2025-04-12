@@ -14,7 +14,7 @@ class NotionToolSchema(BaseModel):
     topics: list[str] = Field(..., description="The topic to learn about")
 
 # Step 2: Define the Tool
-class NotionTool(Tool[str]):
+class NotionTool(Tool[List[Dict[str, str]]]):
     """Creates and populates a Notion Board and subpages for learning"""
 
     ### Eventually add in podcasts, youtube videos, further reading
@@ -26,31 +26,34 @@ class NotionTool(Tool[str]):
     args_schema = NotionToolSchema
     output_schema: ClassVar[tuple[str, str]] = (
         "list[dict[str, str]]",
-        "A list of topics to create Notion pages and learning plans for."
+        "A list of dictionaries that have 'topic' and 'page_id' for each Notion page created."
     )
 
-    def run(self, context: ToolRunContext, topics: list[str]) -> str:
-        
+    def run(self, context: ToolRunContext, topics: list[str]) -> List[Dict[str, str]]:
         """Run the Notion Tool."""
 
-        notion_api_key = os.getenv(("NOTION_API_KEY"))
+        notion_api_key = os.getenv("NOTION_API_KEY")
         notion_parent_id = os.getenv("NOTION_PARENT_ID")
 
         notion = Client(auth=notion_api_key)
 
-        notion.pages.update(page_id=notion_parent_id,
-        properties = {
-            "title": [
-                {
-                    "type": "text",
-                    "text": {"content": "Learning Boards"}
-                }
-            ]
-        })
+        notion.pages.update(
+            page_id=notion_parent_id,
+            properties={
+                "title": [
+                    {
+                        "type": "text",
+                        "text": {"content": "Learning Boards"}
+                    }
+                ]
+            }
+        )
 
-        # Step 1: Create subpages for each topic
+        created_pages = []
+
+        # Step 1: Create subpages for each topic and store their IDs
         for topic in topics:
-            notion.pages.create(
+            response = notion.pages.create(
                 parent={"type": "page_id", "page_id": notion_parent_id},
                 properties={
                     "title": [
@@ -77,19 +80,28 @@ class NotionTool(Tool[str]):
                     }
                 ]
             )
-        
+            created_pages.append({
+                "topic": topic,
+                "page_id": response["id"]
+            })
+
         # Step 2: Build a clean checkbox list with no links
         checkbox_blocks = []
 
         for topic in topics:
-            checkbox_blocks.append({"object": "block", "type": "to_do",
-                "to_do": {"rich_text": [
+            checkbox_blocks.append({
+                "object": "block",
+                "type": "to_do",
+                "to_do": {
+                    "rich_text": [
                         {
                             "type": "text",
                             "text": {"content": topic}
                         }
                     ],
-                    "checked": False}})
+                    "checked": False
+                }
+            })
 
         # Step 3: Add a section title + checklist to the main page
         notion.blocks.children.append(
@@ -111,4 +123,4 @@ class NotionTool(Tool[str]):
             ]
         )
 
-        return "Notion has been updated!"
+        return created_pages
