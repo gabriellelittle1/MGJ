@@ -8,6 +8,7 @@ from my_custom_tools.TopicSelectorTool import TopicSelectorTool
 from my_custom_tools.NotionTool import NotionTool
 from my_custom_tools.YouTubeTool import YouTubeTool
 from my_custom_tools.RecReadTool import RecReadTool
+from my_custom_tools.PaperSummaryTool import PaperSummaryTool
 
 custom_tool_registry = InMemoryToolRegistry.from_local_tools(
     [
@@ -18,5 +19,6 @@ custom_tool_registry = InMemoryToolRegistry.from_local_tools(
         NotionTool(),
         YouTubeTool(),
         RecReadTool(),
+        PaperSummaryTool(),
     ],
 )
