@@ -50,7 +50,7 @@ class NotionTool(Tool[List[Dict[str, str]]]):
         checkbox_blocks = []
 
         for topic in topics:
-            blocks = self.generate_lesson_blocks(topic)
+            blocks, content = self.generate_lesson_blocks(topic)
 
             response = notion.pages.create(
                 parent={"type": "page_id", "page_id": notion_parent_id},
@@ -58,7 +58,7 @@ class NotionTool(Tool[List[Dict[str, str]]]):
                 children=blocks
             )
 
-            created_pages.append({"topic": topic, "page_id": response["id"]})
+            created_pages.append({"topic": topic, "page_id": response["id"], "content": content})
 
             checkbox_blocks.append({
                 "object": "block",
@@ -90,7 +90,7 @@ class NotionTool(Tool[List[Dict[str, str]]]):
             ]
         )
 
-        created_pages.append({"topic": "Paper Summary", "page_id": response["id"]})
+        created_pages.append({"topic": "Paper Summary", "page_id": response["id"], "content": "summary of paper"})
 
         notion.blocks.children.append(
             block_id=notion_parent_id,
@@ -210,7 +210,7 @@ class NotionTool(Tool[List[Dict[str, str]]]):
             else:
                 blocks.append(self._paragraph(line))
 
-        return blocks
+        return blocks, content
 
     def _clean_list_prefix(self, text):
         return re.sub(r"^(\d+\.\s+|[-*]\s+)", "", text)
