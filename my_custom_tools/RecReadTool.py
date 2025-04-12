@@ -11,7 +11,7 @@ import os
 class RecReadToolSchema(BaseModel): 
 
     """Input Schema for RecReadTool."""
-    topics: List[Dict[str, str]] = Field(description="The list of topic pages and their IDs.")
+    topics: List[Dict[str, str]] = Field(description="The list of dictionaries (output from the NotionTool), each with 'topic', 'page_id' and 'content' keys.")
 
 class RecReadTool(Tool[None]):
 

@@ -13,7 +13,7 @@ load_dotenv(override=True)
 class YouTubeToolSchema(BaseModel): 
 
     """Input Schema for YoutubeTool."""
-    topics: List[Dict[str, str]] = Field(description="The list of topic pages and their IDs.")
+    topics: List[Dict[str, str]] = Field(description="The list of dictionaries (output from the NotionTool), each with 'topic', 'page_id' and 'content' keys.")
 
 class YouTubeTool(Tool[None]):
 
