@@ -17,7 +17,7 @@ notion_parent_id = os.getenv("NOTION_PARENT_ID")
 # Initialize the Notion client
 notion = Client(auth=notion_api_key)
 
-def run_RAI(topic, video_preference = False, number_of_videos = 2):
+def run_RAI(topic, video_preference = False, rec_reading_preference = False, number_of_videos = 2):
 
 
   my_config = Config.from_default()
@@ -36,21 +36,22 @@ def run_RAI(topic, video_preference = False, number_of_videos = 2):
   # number_of_videos = 2
 
   task = (
-              lambda : f"""You are a research assistant running these tasks: 
-                        - Find and download a paper on the topic of {topic} using the ArXivTool. 
-                        - Run the PDFReaderTool to extract the full text from the pdfs in the local folder.
-                        - From the full text, extract the core mathematical and scientific concepts required 
-                          to understand the paper. Focus only on generalizable topics that could be included 
-                          in a learning pathway or curriculum—avoid content specific to the study's location, 
-                          data, or outcomes. List only the overarching topics, with no explanations or extra text.
-                        - Then use the TopicSelectorTool on these topics. 
-                        - Then use the Notion Tool to create Notion pages for these topics.
-                        - {video_preference * "Use the YouTubeTool to find videos on each topic."}
-                        
-                          Take into account these constraints: {constraints}
-                        """
+            lambda : f"""You are a research assistant running these tasks: 
+                      - Find and download a paper on the topic of {topic} using the ArXivTool. 
+                      - Run the PDFReaderTool to extract the full text from the pdfs in the local folder.
+                      - From the full text, extract the core mathematical and scientific concepts required 
+                        to understand the paper. Focus only on generalizable topics that could be included 
+                        in a learning pathway or curriculum—avoid content specific to the study's location, 
+                        data, or outcomes. List only the overarching topics, with no explanations or extra text.
+                      - Then use the TopicSelectorTool on these topics. 
+                      - Then use the Notion Tool to create Notion pages for these topics.
+                      - {video_preference * "Use the YouTubeTool to find videos on each topic."}
+                      - {rec_reading_preference * "Use the RecReadTool to find resources on each topic."}
+                      
+                        Take into account these constraints: {constraints}
+                      """
 
-          )
+        )
 
 
   # Iterate on the plan with the user until they are happy with it

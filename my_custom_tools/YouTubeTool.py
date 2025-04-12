@@ -41,8 +41,6 @@ class YouTubeTool(Tool[None]):
 
         notion = Client(auth=notion_api_key)
 
-        notion = Client(auth=notion_api_key)
-
         for page in topics:
             topic = page["topic"]
             page_id = page["page_id"]
