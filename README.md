@@ -33,10 +33,11 @@ Tools and Workflow so far:
   2. ArXivTool finds papers.
   3. DownloadPaperTool downloads papers.
   4. PDFReaderTool reads the papers, and finds subtopics.
+  5. TopicPickerTool allows user to choose which topics to have lessons on.
+  6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it. 
+
 
 Next Steps: 
-  5. TopicPickerTool allows user to choose which topics to have lessons on. 
-  6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it. 
   7. Quiz for each topic with some form of Gameification. 
   8. FRONT END!! 
   9. Much Cooler lessons with multimodal learning - podcast creation + youtube finding + 
