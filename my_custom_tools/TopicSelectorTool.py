@@ -1,7 +1,7 @@
 from typing import ClassVar, List, Optional
 from pydantic import BaseModel, Field
 from portia import Tool, ToolRunContext
-from portia.clarification import InputClarification  # <- This is what you use!
+from portia.clarification import InputClarification 
 
 
 class TopicSelectorToolSchema(BaseModel):

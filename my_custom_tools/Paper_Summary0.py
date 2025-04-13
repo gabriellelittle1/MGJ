@@ -3,7 +3,7 @@ from portia.cli import CLIExecutionHooks
 from portia import *
 import requests
 import xml.etree.ElementTree as ET
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 from typing import Generic, TypeVar, List, ClassVar, Dict, Optional, Type
 from notion_client import Client
 import openai
@@ -12,8 +12,7 @@ from my_custom_tools.utils import truncate_at_sentence
 
 ### This one adds the first step 
 class PaperSummary0Schema(BaseModel):
-    """Input schema for PaperSummary0Tool."""
-    papers: List[Dict[str, str]] = Field(description="List of dictionaries with paper data including 'title', 'summary', and 'link'.")
+    papers: List[Dict[str, str]]
 
 class PaperSummary0Tool(Tool[str]):
     """Creates a Summary Page in the Notion, and populates it."""
@@ -27,8 +26,8 @@ class PaperSummary0Tool(Tool[str]):
         "Confirmation of the summary added on the Notion page."
     )
 
-    def run(self, context: ToolRunContext, papers: List[Dict[str, str]]) -> str:
-        
+    def run(self, context: ToolRunContext, input_data: PaperSummary0Schema) -> str:
+        papers = input_data.papers
         notion = Client(auth=os.getenv("NOTION_API_KEY"))
         parent_id = os.getenv("NOTION_PARENT_ID")
         content = papers[0]['summary']
@@ -129,4 +128,3 @@ class PaperSummary0Tool(Tool[str]):
             )
         
         return "Paper summary added to Notion page."
-        
