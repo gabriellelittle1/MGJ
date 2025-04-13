@@ -11,6 +11,7 @@ You can provide it with a research paper—or simply a topic, and it will find a
 Once you've built a solid foundation, ExplAIn returns to the original paper and explains it in a clear, digestible format—grounded in your personalized knowledge path. The result is a seamless journey from confusion to clarity, so you can focus on learning instead of searching.
 
 ## How we used Portia AI
+Portia was critical in orchestrating a system of intelligent agents that power ExplAIn's functionality. We designed a suite of custom tools that communicate via the Portia framework to automate a multi-step, personalized learning workflow. This workflow is curated into a dedicated Notion workspace, where each concept is transformed into an interactive lesson page—with embedded resources, quizzes, and progress tracking.
 
 ### Custom Tools
 * ArXivTool: _Finds papers from arXiv using the arXiv API, given a topic._
@@ -26,7 +27,7 @@ Once you've built a solid foundation, ExplAIn returns to the original paper and 
 
 Tools and Workflow so far: 
 
-  1. Input topic and number of papers.
+  1. Input research topic.
   2. ArXivTool finds papers.
   3. DownloadPaperTool downloads papers.
   4. PDFReaderTool reads the papers, and finds subtopics.
