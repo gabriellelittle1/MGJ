@@ -32,7 +32,9 @@ Tools and Workflow so far:
   4. PDFReaderTool reads the papers, and finds subtopics.
   5. TopicPickerTool allows user to choose which topics to have lessons on.
   6. NotionTool creates folder called "Learning Plans" with a page for each topic and populating it (while using a secondary LLM to check if output is accurate).
-  7. YouTubeTool optionally adds links to 3 videos on the subtopics (on each page). 
+  7. YouTubeTool optionally adds links to 3 videos on the subtopics (on each page).
+  8. RecReadTool optionally adds resources on the subtopics (recommended text books, wikipedia pages)
+  9. QuizTool creates subpages for each topic page consisting of a curated quiz + answers
 
 ## API Instructions 
 _.env.example in repo_
