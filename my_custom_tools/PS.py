@@ -13,7 +13,8 @@ from my_custom_tools.utils import truncate_at_sentence
 class PSToolSchema(BaseModel): 
 
     """Input Schema for PSTool."""
-    papers: List[Dict[str, str]] = Field(description="The list of dictionaries (output from the arXivTool), each with 'title', 'summary' and 'link' keys.")
+    papers: List[Dict[str, str]] = Field(..., description="The list of dictionaries (output from the arXivTool), each with 'title', 'summary' and 'link' keys.")
+    pdf_texts: Dict[str, str] = Field(..., description="The dictionary of filename -> full text (output from the PDFReaderTool).")
 
 class PSTool(Tool[None]):
 
@@ -28,7 +29,7 @@ class PSTool(Tool[None]):
         "This tool does not return anything."
     )
 
-    def run(self, context, papers: List[Dict[str, str]]) -> None:
+    def run(self, context, papers: List[Dict[str, str]], pdf_texts: Dict[str, str]) -> None:
         """Adds Notion page and fills it with paper summary."""
 
         notion_api_key = os.getenv("NOTION_API_KEY")
@@ -81,5 +82,5 @@ class PSTool(Tool[None]):
                 properties={"title": [{"type": "text", "text": {"content": "Paper Summary"}}]},
                 children=blocks
             )
-
+    
         return 

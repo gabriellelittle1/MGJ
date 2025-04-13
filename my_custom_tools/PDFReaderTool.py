@@ -2,7 +2,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 from pydantic import BaseModel
 from portia import Tool, ToolHardError, ToolRunContext
-from typing import ClassVar
+from typing import ClassVar, Dict
 
 
 class PDFReaderToolSchema(BaseModel):
@@ -10,7 +10,7 @@ class PDFReaderToolSchema(BaseModel):
     pass
 
 
-class PDFReaderTool(Tool[dict[str, str]]):
+class PDFReaderTool(Tool[Dict[str, str]]):
     """Reads and returns full text from all PDFs in the ./papers/ folder."""
 
     id: ClassVar[str] = "pdf_reader_tool"
@@ -19,7 +19,7 @@ class PDFReaderTool(Tool[dict[str, str]]):
     args_schema = PDFReaderToolSchema
     output_schema: ClassVar[tuple[str, str]] = ("dict", "Dictionary of filename -> full text")
 
-    def run(self, ctx: ToolRunContext) -> dict[str, str]:
+    def run(self, ctx: ToolRunContext) -> Dict[str, str]:
         """Extracts and returns full text from all PDFs in the ./papers folder."""
         
         papers_dir = Path.cwd() / "fake_papers"
