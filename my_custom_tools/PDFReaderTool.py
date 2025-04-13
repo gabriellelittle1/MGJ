@@ -3,6 +3,27 @@ import fitz  # PyMuPDF
 from pydantic import BaseModel
 from portia import Tool, ToolHardError, ToolRunContext
 from typing import ClassVar, Dict
+import re
+import html
+
+def sanitize_text(text: str) -> str:
+    # Replace newlines, tabs, and carriage returns with space
+    text = text.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+
+    # Unescape any HTML entities (if any were accidentally included)
+    text = html.unescape(text)
+
+    # Collapse multiple spaces into one
+    text = re.sub(r'\s+', ' ', text)
+
+    # Remove control characters except basic punctuation
+    text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)
+
+    # Escape quotes if planning to inject into a JSON string directly
+    text = text.replace('"', '\\"')
+
+    # Strip leading/trailing whitespace again after cleaning
+    return text.strip()
 
 
 class PDFReaderToolSchema(BaseModel):
@@ -35,7 +56,8 @@ class PDFReaderTool(Tool[Dict[str, str]]):
         for file_path in pdf_files:
             try:
                 full_text = self.read_pdf(file_path)
-                texts[file_path.name] = full_text
+                cleaned_full_text = sanitize_text(full_text)
+                texts[file_path.name] = cleaned_full_text
             except Exception as e:
                 texts[file_path.name] = f"Error reading file: {str(e)}"
 
