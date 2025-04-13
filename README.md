@@ -26,7 +26,7 @@ Once you've built a solid foundation, ExplAIn returns to the original paper and 
 
 Tools and Workflow so far: 
 
-  1. Input topic and number of papers.
+  1. Input research topic.
   2. ArXivTool finds papers.
   3. DownloadPaperTool downloads papers.
   4. PDFReaderTool reads the papers, and finds subtopics.
