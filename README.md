@@ -22,6 +22,7 @@ Portia was critical in orchestrating a system of intelligent agents that power E
 * RecReadTool: _Finds wiki link and textbook urls related to the topic and adds to the Notion pages._
 * YouTubeTool: _Finds YouTube urls related to the topic and adds to the Notion pages._
 * QuizTool: _Creates custom quiz for each topic based on the lesson._
+* PaperSummaryTool: _Creates and populates the page summary subpage._
 
 ## Detailed Workflow
 
