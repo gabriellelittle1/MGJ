@@ -22,7 +22,7 @@ class PDFReaderTool(Tool[Dict[str, str]]):
     def run(self, ctx: ToolRunContext) -> Dict[str, str]:
         """Extracts and returns full text from all PDFs in the ./papers folder."""
         
-        papers_dir = Path.cwd() / "fake_papers"
+        papers_dir = Path.cwd() / "papers"
 
         if not papers_dir.exists() or not papers_dir.is_dir():
             raise ToolHardError("The 'papers/' folder does not exist.")
@@ -50,9 +50,9 @@ class PDFReaderTool(Tool[Dict[str, str]]):
                 cleaned_text = self._remove_arxiv_footer(page_text)
 
                 #Check for 'References' or 'Bibliography' section header
-                # if self._is_bibliography_page(cleaned_text):
-                #     print(f"Stopping at page {page_num + 1} (found References section).")
-                #     break
+                if self._is_bibliography_page(cleaned_text):
+                    print(f"Stopping at page {page_num + 1} (found References section).")
+                    break
 
                 text.append(f"--- Page {page_num + 1} ---\n{cleaned_text.strip()}")
         return "\n\n".join(text)
