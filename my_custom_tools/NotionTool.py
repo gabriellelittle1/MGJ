@@ -10,6 +10,8 @@ from notion_client import Client
 import os
 import openai
 import re
+import google.generativeai as genai
+
 
 class NotionToolSchema(BaseModel):
     """Input schema for ArXiv Tool"""
@@ -48,7 +50,7 @@ class NotionTool(Tool[List[Dict[str, str]]]):
         checkbox_blocks = []
 
         for topic in topics:
-            blocks = self.generate_lesson_blocks(topic)
+            blocks, content = self.generate_lesson_blocks(topic)
 
             response = notion.pages.create(
                 parent={"type": "page_id", "page_id": notion_parent_id},
@@ -56,7 +58,7 @@ class NotionTool(Tool[List[Dict[str, str]]]):
                 children=blocks
             )
 
-            created_pages.append({"topic": topic, "page_id": response["id"]})
+            created_pages.append({"topic": topic, "page_id": response["id"], "content": content})
 
             checkbox_blocks.append({
                 "object": "block",
@@ -66,6 +68,29 @@ class NotionTool(Tool[List[Dict[str, str]]]):
                     "checked": False
                 }
             })
+
+        # # Now add the Paper Summary page (one page, after all topics)
+        # response = notion.pages.create(
+        #     parent={"type": "page_id", "page_id": notion_parent_id},
+        #     properties={
+        #         "title": [
+        #             {"type": "text", "text": {"content": "Paper Summary"}}
+        #         ]
+        #     },
+        #     children=[
+        #         {
+        #             "object": "block",
+        #             "type": "paragraph",
+        #             "paragraph": {
+        #                 "rich_text": [
+        #                     {"type": "text", "text": {"content": ""}}
+        #                 ]
+        #             }
+        #         }
+        #     ]
+        # )
+
+        # created_pages.append({"topic": "Paper Summary", "page_id": response["id"], "content": "summary of paper"})
 
         notion.blocks.children.append(
             block_id=notion_parent_id,
@@ -126,6 +151,34 @@ class NotionTool(Tool[List[Dict[str, str]]]):
         )
 
         content = response.choices[0].message.content.strip()
+
+        api_key = os.getenv("GEMINI_API_KEY")
+        genai.configure(api_key=api_key)
+
+        generation_config = genai.types.GenerationConfig(
+            temperature=0.2
+        )
+
+        model_name = "gemini-2.0-flash" 
+        model = genai.GenerativeModel(
+            model_name=model_name,
+            generation_config=generation_config,
+        )
+
+        verify_prompt = (
+            "You are a factual checker for educational content.\n"
+            "Your job is to read the following lesson and correct any factual errors, math mistakes, or misleading information.\n"
+            "Do NOT alter the structure, formatting, section headers, or LaTeX math delimiters (\\( ... \\)).\n"
+            "Keep bullet points, numbering, and headings exactly as they are.\n"
+            "If the lesson is already correct, return it unchanged.\n\n"
+            "Return ONLY the revised lesson text — no commentary, explanation, or summary.\n\n"
+            f"{content}"
+        )
+
+        revision = model.generate_content(verify_prompt)
+
+        content = revision.text.strip() 
+        
         blocks = []
         section = None
 
@@ -157,7 +210,7 @@ class NotionTool(Tool[List[Dict[str, str]]]):
             else:
                 blocks.append(self._paragraph(line))
 
-        return blocks
+        return blocks, content
 
     def _clean_list_prefix(self, text):
         return re.sub(r"^(\d+\.\s+|[-*]\s+)", "", text)

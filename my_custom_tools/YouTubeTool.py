@@ -7,13 +7,12 @@ from pydantic import BaseModel, Field
 from typing import Generic, TypeVar, List, ClassVar, Dict, Literal
 from notion_client import Client
 import os
-load_dotenv(override=True)
-
+from my_custom_tools.utils import truncate_at_sentence
 
 class YouTubeToolSchema(BaseModel): 
 
     """Input Schema for YoutubeTool."""
-    topics: List[Dict[str, str]] = Field(description="The list of topic pages and their IDs.")
+    topics: List[Dict[str, str]] = Field(description="The list of dictionaries (output from the NotionTool), each with 'topic', 'page_id' and 'content' keys.")
 
 class YouTubeTool(Tool[None]):
 
@@ -38,8 +37,6 @@ class YouTubeTool(Tool[None]):
         
         if not notion_api_key or not youtube_api_key:
             raise EnvironmentError("Missing NOTION_API_KEY or GOOGLE_API_KEY")
-
-        notion = Client(auth=notion_api_key)
 
         notion = Client(auth=notion_api_key)
 
@@ -126,7 +123,7 @@ class YouTubeTool(Tool[None]):
                                 {
                                     "type": "text",
                                     "text": {
-                                        "content": description[:200] + "...",
+                                        "content": truncate_at_sentence(description, 300) + "...",
                                     },
                                     "annotations": {
                                         "color": "gray"

@@ -9,7 +9,6 @@ from typing import Generic, TypeVar, List, ClassVar, Dict
 class ArXivToolSchema(BaseModel):
     """Input schema for ArXiv Tool"""
     topic: str = Field(..., description="The topic to learn about")
-    max_results: int = Field(3, description="Number of papers to return")
 
 # Step 2: Define the Tool
 class ArXivTool(Tool[List[Dict[str, str]]]):
@@ -24,10 +23,10 @@ class ArXivTool(Tool[List[Dict[str, str]]]):
         "A list of dictionaries containing paper data like title, authors, and pdf_url"
     )
 
-    def run(self, context: ToolRunContext, topic: str, max_results: int = 3) -> List[Dict[str, str]]:
+    def run(self, context: ToolRunContext, topic: str) -> List[Dict[str, str]]:
         
         """Run the arXiv Tool."""
-
+        max_results = 1
         base_url = "http://export.arxiv.org/api/query"
         params = {
             "search_query": f"all:{topic}",
@@ -48,9 +47,8 @@ class ArXivTool(Tool[List[Dict[str, str]]]):
             paper = {}
             paper['title'] = entry.find('atom:title', ns).text.strip()
             paper['summary'] = entry.find('atom:summary', ns).text.strip()
-            #paper['link'] = entry.find('atom:id', ns).text.strip()
             arxiv_id = entry.find('atom:id', ns).text.strip().split('/')[-1]
             paper['link'] = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
             papers.append(paper)
-
+            
         return papers

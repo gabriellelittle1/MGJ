@@ -1,7 +1,7 @@
 from typing import ClassVar, List, Optional
 from pydantic import BaseModel, Field
 from portia import Tool, ToolRunContext
-from portia.clarification import InputClarification  # <- This is what you use!
+from portia.clarification import InputClarification 
 
 
 class TopicSelectorToolSchema(BaseModel):
@@ -18,12 +18,7 @@ class TopicSelectorTool(Tool[List[str]]):
     args_schema = TopicSelectorToolSchema
     output_schema: ClassVar[tuple[str, str]] = ("list", "The topics selected by the user")
 
-    def run(
-        self,
-        ctx: ToolRunContext,
-        raw_topics: List[str],
-        selected_indices: Optional[str] = None
-    ) -> List[str] | InputClarification:
+    def run(self, ctx: ToolRunContext, raw_topics: List[str], selected_indices: Optional[str] = None) -> List[str] | InputClarification:
 
         if selected_indices is not None:
             try:

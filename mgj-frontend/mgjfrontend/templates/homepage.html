@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html>
-<body>
+<body style="margin: 0; padding: 0; background-color: #e0f2f1; font-family: Arial, sans-serif;">
 
-<h1>MGJ AI Research Assistant</h1>
-<p>Help with learning</p>
+<h1>ExplAIn</h1>
+<p>ExplAIn is an intelligent learning assistant built using the Portia toolkit that transforms complex academic papers into structured, personalized learning experiences.
+
+    Have you ever started reading a paper, only to find yourself falling down a rabbit hole of Wikipedia pages, YouTube videos, and textbook chapters—just to grasp the basics? ExplAIn streamlines that entire process.
+    
+    You can provide it with a research paper—or simply a topic, and it will find a relevant one for you. From there, ExplAIn identifies the key concepts necessary for deep comprehension and asks you which areas you'd like to explore. It then generates targeted lessons for each concept, including curated videos, textbook references, Wikipedia links, and interactive quizzes.
+    
+    Once you've built a solid foundation, ExplAIn returns to the original paper and explains it in a clear, digestible format—grounded in your personalized knowledge path. The result is a seamless journey from confusion to clarity, so you can focus on learning instead of searching.</p>
 
 <style>
     .button {
@@ -35,6 +41,7 @@
     {% csrf_token %}
     <input type="hidden" name="action" value="generate">
     <label>What topic would you like to learn about today?</label>
+    <br>
     <input type="text" name="topic" value="{{ topic }}"><br>
   
     <label>
@@ -44,10 +51,10 @@
     <label>
       <input type="checkbox" name="youtube_videos"> Include YouTube videos
     </label>
-      <!-- <br>
+      <br>
     <label>
         <input type="checkbox" name="quiz"> Quiz
-    </label>-->
+    </label>
         <br> 
     
     <button class="button button1" type="button" onclick="showGenerateLoading()">Generate Plan
@@ -70,6 +77,7 @@
     <textarea name="additional_guidance" rows="3" style="width:100%"></textarea><br><br>
 
     <label> Are you happy with this plan?</label>
+    <br>
       <button class="button button1" type="button" onclick="showFeedbackLoading(this)" value="yes">Yes</button>
       <button class="button button1" type="button" onclick="showFeedbackLoading(this)" value="no">No</button>
     </form>
@@ -140,7 +148,7 @@
   </script>
   
   {% if clarification_required %}
-  <h3>Portia Needs More Input</h3>
+  <h3>Please choose the topics you would like to learn more about</h3>
   <p><strong>{{ clarification_message|linebreaksbr }}</strong></p>
 
   <form method="post" id="clarification-form">
@@ -168,6 +176,20 @@
     }
   </script>
 {% endif %}
+
+{% if notion_redirect %}
+
+<script>
+    function openInNewTab(url) {
+      window.open(url, '_blank');
+    }
+  </script>
+  <label>Click the button to open the Notion page with your learning!</label>
+  <br>
+  <button class="button button1" onclick="openInNewTab('https://www.notion.so/{{ notion_redirect }}')">Open New Tab</button>
+
+{% endif %}
+
 
 </body>
 </html>

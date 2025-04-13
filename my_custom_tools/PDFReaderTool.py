@@ -2,7 +2,28 @@ from pathlib import Path
 import fitz  # PyMuPDF
 from pydantic import BaseModel
 from portia import Tool, ToolHardError, ToolRunContext
-from typing import ClassVar
+from typing import ClassVar, Dict
+import re
+import html
+
+def sanitize_text(text: str) -> str:
+    # Replace newlines, tabs, and carriage returns with space
+    text = text.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+
+    # Unescape any HTML entities (if any were accidentally included)
+    text = html.unescape(text)
+
+    # Collapse multiple spaces into one
+    text = re.sub(r'\s+', ' ', text)
+
+    # Remove control characters except basic punctuation
+    text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)
+
+    # Escape quotes if planning to inject into a JSON string directly
+    text = text.replace('"', '\\"')
+
+    # Strip leading/trailing whitespace again after cleaning
+    return text.strip()
 
 
 class PDFReaderToolSchema(BaseModel):
@@ -10,7 +31,7 @@ class PDFReaderToolSchema(BaseModel):
     pass
 
 
-class PDFReaderTool(Tool[dict[str, str]]):
+class PDFReaderTool(Tool[Dict[str, str]]):
     """Reads and returns full text from all PDFs in the ./papers/ folder."""
 
     id: ClassVar[str] = "pdf_reader_tool"
@@ -19,10 +40,10 @@ class PDFReaderTool(Tool[dict[str, str]]):
     args_schema = PDFReaderToolSchema
     output_schema: ClassVar[tuple[str, str]] = ("dict", "Dictionary of filename -> full text")
 
-    def run(self, ctx: ToolRunContext) -> dict[str, str]:
+    def run(self, ctx: ToolRunContext) -> Dict[str, str]:
         """Extracts and returns full text from all PDFs in the ./papers folder."""
         
-        papers_dir = Path.cwd() / "fake_papers" #"papers" #
+        papers_dir = Path.cwd() / "papers"
 
         if not papers_dir.exists() or not papers_dir.is_dir():
             raise ToolHardError("The 'papers/' folder does not exist.")
@@ -35,7 +56,8 @@ class PDFReaderTool(Tool[dict[str, str]]):
         for file_path in pdf_files:
             try:
                 full_text = self.read_pdf(file_path)
-                texts[file_path.name] = full_text
+                cleaned_full_text = sanitize_text(full_text)
+                texts[file_path.name] = cleaned_full_text
             except Exception as e:
                 texts[file_path.name] = f"Error reading file: {str(e)}"
 
@@ -49,10 +71,10 @@ class PDFReaderTool(Tool[dict[str, str]]):
                 page_text = page.get_text("text")
                 cleaned_text = self._remove_arxiv_footer(page_text)
 
-                # Check for 'References' or 'Bibliography' section header
-                # if self._is_bibliography_page(cleaned_text):
-                #     print(f"Stopping at page {page_num + 1} (found References section).")
-                #     break
+                #Check for 'References' or 'Bibliography' section header
+                if self._is_bibliography_page(cleaned_text):
+                    print(f"Stopping at page {page_num + 1} (found References section).")
+                    break
 
                 text.append(f"--- Page {page_num + 1} ---\n{cleaned_text.strip()}")
         return "\n\n".join(text)
@@ -74,4 +96,3 @@ class PDFReaderTool(Tool[dict[str, str]]):
             or lowered.strip().startswith("references")
             or lowered.strip().startswith("bibliography")
         )
-    
