@@ -5,8 +5,6 @@
 <h1>MGJ AI Research Assistant</h1>
 <p>Help with learning</p>
 
-
-
 <style>
     .button {
       border: none;
@@ -33,21 +31,143 @@
     }
 </style>
 
-<form method="post">
+<form method="post" id="generate-form">
     {% csrf_token %}
-    <label>Enter a value:</label>
-    <input type="text" name="input_text" required><br><br>
+    <input type="hidden" name="action" value="generate">
+    <label>What topic would you like to learn about today?</label>
+    <input type="text" name="topic" value="{{ topic }}"><br>
   
-    <label><input type="checkbox" name="option1"> Option 1</label><br>
-    <label><input type="checkbox" name="option2"> Option 2</label><br><br>
-  
-    <button class="button button1" type="submit">Run Notebook</button>
+    <label>
+      <input type="checkbox" name="further_reading"> Include further reading
+    </label>
+      <br>
+    <label>
+      <input type="checkbox" name="youtube_videos"> Include YouTube videos
+    </label>
+      <!-- <br>
+    <label>
+        <input type="checkbox" name="quiz"> Quiz
+    </label>-->
+        <br> 
+    
+    <button class="button button1" type="button" onclick="showGenerateLoading()">Generate Plan
+    </button>
   </form>
   
-  {% if output %}
-    <h2>Notebook Output:</h2>
-    <pre>{{ output }}</pre>
+  {% if plan_steps %}
+    <h3>Generated Plan:</h3>
+    <ol>
+        {% for step in plan_steps %}
+          <li>{{ step|linebreaksbr }}</li>
+        {% endfor %}
+      </ol>
+    <form method="post" id="plan-feedback-form">
+        {% csrf_token %}
+    <input type="hidden" name="action" value="feedback">
+    <input type="hidden" id="decision-field" name="decision" value="">
+
+    <label>Any additional guidance?</label><br>
+    <textarea name="additional_guidance" rows="3" style="width:100%"></textarea><br><br>
+
+    <label> Are you happy with this plan?</label>
+      <button class="button button1" type="button" onclick="showFeedbackLoading(this)" value="yes">Yes</button>
+      <button class="button button1" type="button" onclick="showFeedbackLoading(this)" value="no">No</button>
+    </form>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="clear">
+        <button class="button button1" type="submit">Clear Plan</button>
+    </form>
   {% endif %}
+  
+  {% if output %}
+    <h3>Plan Output:</h3>
+    <pre style="white-space: pre-wrap;">{{ output }}</pre>
+  {% endif %}
+
+    <!-- Spinner for Generate Plan -->
+<div id="generate-loading" style="display: none; text-align: center; margin-top: 20px;">
+    <div class="spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #04AA6D; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p>Generating plan...</p>
+  </div>
+  
+  <script>
+    function showGenerateLoading() {
+      document.getElementById('generate-form').style.display = 'none';
+      document.getElementById('generate-loading').style.display = 'block';
+      document.getElementById('generate-form').submit();
+    }
+  
+    function showLoadingAndSubmit(button) {
+      document.getElementById('plan-feedback-form').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+      button.closest("form").submit();
+    }
+  </script>
+  
+  <style>
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  </style>
+  
+  <!-- Spinner for Feedback (Yes/No) -->
+  <div id="feedback-loading" style="display: none; text-align: center; margin-top: 20px;">
+    <div class="spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #04AA6D; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p id="feedback-message">Working...</p>
+  </div>
+
+  <script>
+    function showFeedbackLoading(button) {
+      const decision = button.value; //Extracts the actual string, yes or no
+      // Set the value in the hidden input
+      document.getElementById("decision-field").value = decision;
+  
+      // Hide the feedback form
+      document.getElementById('plan-feedback-form').style.display = 'none';
+  
+      // Set message
+      const message = decision === 'yes' ? "Executing plan..." : "Regenerating plan...";
+      document.getElementById('feedback-message').textContent = message;
+  
+      // Show loading
+      document.getElementById('feedback-loading').style.display = 'block';
+  
+      // Submit form
+      document.getElementById('plan-feedback-form').submit();
+    }
+  </script>
+  
+  {% if clarification_required %}
+  <h3>Portia Needs More Input</h3>
+  <p><strong>{{ clarification_message|linebreaksbr }}</strong></p>
+
+  <form method="post" id="clarification-form">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="clarify">
+    <input type="hidden" name="plan_run_id" value="{{ plan_run_id }}">
+    <input type="hidden" name="argument_name" value="{{ argument_name }}">
+
+    <label>Enter your response:</label><br>
+    <input type="text" name="clarification_response" style="width: 100%; padding: 12px; font-size: 16px;" required><br><br>
+
+    <button class="button button1" type="button" onclick="submitClarification()">Submit</button>
+  </form>
+
+  <div id="clarification-loading" style="display: none; text-align: center; margin-top: 20px;">
+    <div class="spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #04AA6D; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p>Continuing with your plan...</p>
+  </div>
+
+  <script>
+    function submitClarification() {
+      document.getElementById('clarification-form').style.display = 'none';
+      document.getElementById('clarification-loading').style.display = 'block';
+      document.getElementById('clarification-form').submit();
+    }
+  </script>
+{% endif %}
 
 </body>
 </html>
