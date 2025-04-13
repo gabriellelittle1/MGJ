@@ -21,6 +21,7 @@ topic = "Using LLMs for Interior Design"
 constraints = []
 video_preference = False
 rec_reading_preference = False
+quiz_preference = False
 ready_to_proceed = False
 
 def planner(topic, constraints, video_preference = False, rec_reading_preference = False):
@@ -34,16 +35,20 @@ def planner(topic, constraints, video_preference = False, rec_reading_preference
 
     task = (
             lambda : f"""You are a research assistant running these tasks: 
-                      - Find and download a paper on the topic of {topic} using the ArXivTool. 
+                      - Find and download 1 paper on the topic of {topic} using the ArXivTool. 
                       - Run the PDFReaderTool to extract the full text from the pdfs in the local folder.
-                      - From the full text, extract the core mathematical and scientific concepts required 
+                      - Use PSTool to create and populate the Page Summary subpage.
+                      - From the text, extract the core mathematical and scientific concepts required 
                         to understand the paper. Focus only on generalizable topics that could be included 
                         in a learning pathway or curriculum—avoid content specific to the study's location, 
                         data, or outcomes. List only the overarching topics, with no explanations or extra text.
                       - Then use the TopicSelectorTool on these topics. 
                       - Then use the Notion Tool to create Notion pages for these topics.
+
                       - {video_preference * "Use the YouTubeTool to find videos on each topic."}
                       - {rec_reading_preference * "Use the RecReadTool to find resources on each topic."}
+                      - {quiz_preference * "Use the QuizTool to create quizzes on each topic."}
+                      
                       
                         Take into account these constraints: {constraints}
                       """
