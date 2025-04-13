@@ -1,10 +1,16 @@
 from typing import ClassVar, List, Optional
+from typing import ClassVar, List, Optional
 from pydantic import BaseModel, Field
 from portia import Tool, ToolRunContext
+from portia.clarification import InputClarification 
 from portia.clarification import InputClarification 
 
 
 class TopicSelectorToolSchema(BaseModel):
+    raw_topics: List[str] = Field(..., description="List of topics to choose from")
+    selected_indices: Optional[str] = Field(
+        default=None,
+        description="Comma-separated topic numbers (e.g. '1, 3, 5')"
     raw_topics: List[str] = Field(..., description="List of topics to choose from")
     selected_indices: Optional[str] = Field(
         default=None,
@@ -15,9 +21,20 @@ class TopicSelectorTool(Tool[List[str]]):
     id: ClassVar[str] = "topic_selector_tool"
     name: ClassVar[str] = "Topic Selector Tool"
     description: ClassVar[str] = "Prompts the user to choose topics by number"
+    description: ClassVar[str] = "Prompts the user to choose topics by number"
     args_schema = TopicSelectorToolSchema
     output_schema: ClassVar[tuple[str, str]] = ("list", "The topics selected by the user")
+    output_schema: ClassVar[tuple[str, str]] = ("list", "The topics selected by the user")
 
+    def run(self, ctx: ToolRunContext, raw_topics: List[str], selected_indices: Optional[str] = None) -> List[str] | InputClarification:
+
+        if selected_indices is not None:
+            try:
+                indices = [int(i.strip()) - 1 for i in selected_indices.split(",")]
+                selected = [raw_topics[i] for i in indices if 0 <= i < len(raw_topics)]
+                return selected
+            except Exception as e:
+                raise ValueError(f"Invalid input: {e}")
     def run(self, ctx: ToolRunContext, raw_topics: List[str], selected_indices: Optional[str] = None) -> List[str] | InputClarification:
 
         if selected_indices is not None:

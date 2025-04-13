@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<body style="margin: 0; padding: 0; background-color: #e0f2f1; font-family: Arial, sans-serif;">
+
+<h1>ExplAIn</h1>
+<p>ExplAIn is an intelligent learning assistant built using the Portia toolkit that transforms complex academic papers into structured, personalized learning experiences.
+
+    Have you ever started reading a paper, only to find yourself falling down a rabbit hole of Wikipedia pages, YouTube videos, and textbook chapters—just to grasp the basics? ExplAIn streamlines that entire process.
+    
+    You can provide it with a research paper—or simply a topic, and it will find a relevant one for you. From there, ExplAIn identifies the key concepts necessary for deep comprehension and asks you which areas you'd like to explore. It then generates targeted lessons for each concept, including curated videos, textbook references, Wikipedia links, and interactive quizzes.
+    
+    Once you've built a solid foundation, ExplAIn returns to the original paper and explains it in a clear, digestible format—grounded in your personalized knowledge path. The result is a seamless journey from confusion to clarity, so you can focus on learning instead of searching.</p>
+
+<style>
+    .button {
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+    
+    .button1 {
+      background-color: white;
+      color: black;
+      border: 2px solid #04AA6D;
+    }
+    
+    .button1:hover {
+      background-color: #04AA6D;
+      color: white;
+    }
+</style>
+
+<form method="post" id="generate-form">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="generate">
+    <label>What topic would you like to learn about today?</label>
+    <br>
+    <input type="text" name="topic" value="{{ topic }}"><br>
+  
+    <label>
+      <input type="checkbox" name="further_reading"> Include further reading
+    </label>
+      <br>
+    <label>
+      <input type="checkbox" name="youtube_videos"> Include YouTube videos
+    </label>
+      <br>
+    <label>
+        <input type="checkbox" name="quiz"> Quiz
+    </label>
+        <br> 
+    
+    <button class="button button1" type="button" onclick="showGenerateLoading()">Generate Plan
+    </button>
+  </form>
+  
+  {% if plan_steps %}
+    <h3>Generated Plan:</h3>
+    <ol>
+        {% for step in plan_steps %}
+          <li>{{ step|linebreaksbr }}</li>
+        {% endfor %}
+      </ol>
+    <form method="post" id="plan-feedback-form">
+        {% csrf_token %}
+    <input type="hidden" name="action" value="feedback">
+    <input type="hidden" id="decision-field" name="decision" value="">
+
+    <label>Any additional guidance?</label><br>
+    <textarea name="additional_guidance" rows="3" style="width:100%"></textarea><br><br>
+
+    <label> Are you happy with this plan?</label>
+    <br>
+      <button class="button button1" type="button" onclick="showFeedbackLoading(this)" value="yes">Yes</button>
+      <button class="button button1" type="button" onclick="showFeedbackLoading(this)" value="no">No</button>
+    </form>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="clear">
+        <button class="button button1" type="submit">Clear Plan</button>
+    </form>
+  {% endif %}
+  
+  {% if output %}
+    <h3>Plan Output:</h3>
+    <pre style="white-space: pre-wrap;">{{ output }}</pre>
+  {% endif %}
+
+    <!-- Spinner for Generate Plan -->
+<div id="generate-loading" style="display: none; text-align: center; margin-top: 20px;">
+    <div class="spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #04AA6D; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p>Generating plan...</p>
+  </div>
+  
+  <script>
+    function showGenerateLoading() {
+      document.getElementById('generate-form').style.display = 'none';
+      document.getElementById('generate-loading').style.display = 'block';
+      document.getElementById('generate-form').submit();
+    }
+  
+    function showLoadingAndSubmit(button) {
+      document.getElementById('plan-feedback-form').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+      button.closest("form").submit();
+    }
+  </script>
+  
+  <style>
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  </style>
+  
+  <!-- Spinner for Feedback (Yes/No) -->
+  <div id="feedback-loading" style="display: none; text-align: center; margin-top: 20px;">
+    <div class="spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #04AA6D; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p id="feedback-message">Working...</p>
+  </div>
+
+  <script>
+    function showFeedbackLoading(button) {
+      const decision = button.value; //Extracts the actual string, yes or no
+      // Set the value in the hidden input
+      document.getElementById("decision-field").value = decision;
+  
+      // Hide the feedback form
+      document.getElementById('plan-feedback-form').style.display = 'none';
+  
+      // Set message
+      const message = decision === 'yes' ? "Executing plan..." : "Regenerating plan...";
+      document.getElementById('feedback-message').textContent = message;
+  
+      // Show loading
+      document.getElementById('feedback-loading').style.display = 'block';
+  
+      // Submit form
+      document.getElementById('plan-feedback-form').submit();
+    }
+  </script>
+  
+  {% if clarification_required %}
+  <h3>Please choose the topics you would like to learn more about</h3>
+  <p><strong>{{ clarification_message|linebreaksbr }}</strong></p>
+
+  <form method="post" id="clarification-form">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="clarify">
+    <input type="hidden" name="plan_run_id" value="{{ plan_run_id }}">
+    <input type="hidden" name="argument_name" value="{{ argument_name }}">
+
+    <label>Enter your response:</label><br>
+    <input type="text" name="clarification_response" style="width: 100%; padding: 12px; font-size: 16px;" required><br><br>
+
+    <button class="button button1" type="button" onclick="submitClarification()">Submit</button>
+  </form>
+
+  <div id="clarification-loading" style="display: none; text-align: center; margin-top: 20px;">
+    <div class="spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #04AA6D; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p>Continuing with your plan...</p>
+  </div>
+
+  <script>
+    function submitClarification() {
+      document.getElementById('clarification-form').style.display = 'none';
+      document.getElementById('clarification-loading').style.display = 'block';
+      document.getElementById('clarification-form').submit();
+    }
+  </script>
+{% endif %}
+
+{% if notion_redirect %}
+
+<script>
+    function openInNewTab(url) {
+      window.open(url, '_blank');
+    }
+  </script>
+  <label>Click the button to open the Notion page with your learning!</label>
+  <br>
+  <button class="button button1" onclick="openInNewTab('https://www.notion.so/{{ notion_redirect }}')">Open New Tab</button>
+
+{% endif %}
+
+
+</body>
+</html>

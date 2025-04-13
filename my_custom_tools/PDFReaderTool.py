@@ -96,4 +96,3 @@ class PDFReaderTool(Tool[Dict[str, str]]):
             or lowered.strip().startswith("references")
             or lowered.strip().startswith("bibliography")
         )
-    
