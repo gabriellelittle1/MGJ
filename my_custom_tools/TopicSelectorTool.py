@@ -18,12 +18,7 @@ class TopicSelectorTool(Tool[List[str]]):
     args_schema = TopicSelectorToolSchema
     output_schema: ClassVar[tuple[str, str]] = ("list", "The topics selected by the user")
 
-    def run(
-        self,
-        ctx: ToolRunContext,
-        raw_topics: List[str],
-        selected_indices: Optional[str] = None
-    ) -> List[str] | InputClarification:
+    def run(self, ctx: ToolRunContext, raw_topics: List[str], selected_indices: Optional[str] = None) -> List[str] | InputClarification:
 
         if selected_indices is not None:
             try:

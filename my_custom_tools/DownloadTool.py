@@ -1,7 +1,7 @@
 import os
 import requests
 from pathlib import Path
-from typing import List, Dict, ClassVar
+from typing import List, Dict, ClassVar, Type
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from portia.cli import CLIExecutionHooks
@@ -38,7 +38,7 @@ class DownloadPaperTool(Tool[str]):
     id: ClassVar[str] = "download_tool"
     name: ClassVar[str] = "download Tool"
     description: ClassVar[str] = "Download the papers from the given urls and create the papers folder."
-    args_schema: type[BaseModel] = DownloadPaperSchema
+    args_schema: Type[BaseModel] = DownloadPaperSchema
     output_schema: ClassVar[tuple[str, str]] = ("str", "A confirmation message indicating success.")
 
     def run(self, context: ToolRunContext, papers: List[Dict[str, str]]) -> str:
