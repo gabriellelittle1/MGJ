@@ -24,8 +24,10 @@ class ArXivTool(Tool[List[Dict[str, str]]]):
     )
 
     def run(self, context: ToolRunContext, topic: str) -> List[Dict[str, str]]:
+    def run(self, context: ToolRunContext, topic: str) -> List[Dict[str, str]]:
         
         """Run the arXiv Tool."""
+        max_results = 1
         max_results = 1
         base_url = "http://export.arxiv.org/api/query"
         params = {
@@ -50,5 +52,6 @@ class ArXivTool(Tool[List[Dict[str, str]]]):
             arxiv_id = entry.find('atom:id', ns).text.strip().split('/')[-1]
             paper['link'] = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
             papers.append(paper)
+            
             
         return papers

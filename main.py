@@ -14,6 +14,7 @@ from portia.plan_run import PlanRunState
 import shutil
 
 load_dotenv(override=True)
+
 # Fetch the Notion API key and set up client
 notion_api_key = os.getenv("NOTION_API_KEY")
 notion_parent_id = os.getenv("NOTION_PARENT_ID")
