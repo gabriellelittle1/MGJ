@@ -50,15 +50,15 @@ _.env.example in repo_
 ### Notion API 
 n.b. _If this is your first time using Notion you must create an account and setup a workspace before creating your API key_
 1. Create Integration with Notion: https://www.notion.so/profile/integrations
-   - Choose your Workspace (making sure you are the owner) and add a name.
+    - Choose your Workspace (making sure you are the owner) and add a name.
 2. Get API key from the configuration page (Internal Integration Secret) and set it to the env file (**NOTION_API_KEY**). 
 3. Create a new page in your workspace.
-  - Click on the three dots on the top right of the page, and scroll to "Connections".
-  - Hover over "Connections", then type the name of the Integration into the searchbar, and give permission.
+    - Click on the three dots on the top right of the page, and scroll to "Connections".
+    - Hover over "Connections", then type the name of the Integration into the searchbar, and give permission.
 4. Get the ID of the page: 
-  - If the URL is https://www.notion.so/1d26ccbbecba807587c1d438baa16104
-  - The ID is 1d26ccbbecba807587c1d438baa16104
-  - Set the ID in the .env (**NOTION_PARENT_ID**)  
+    - If the URL is https://www.notion.so/1d26ccbbecba807587c1d438baa16104
+    - The ID is 1d26ccbbecba807587c1d438baa16104
+    - Set the ID in the .env (**NOTION_PARENT_ID**)  
 
 ### Google API
 1. Go to https://cloud.google.com/apis
