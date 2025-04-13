@@ -26,7 +26,7 @@ class ArXivTool(Tool[List[Dict[str, str]]]):
     def run(self, context: ToolRunContext, topic: str) -> List[Dict[str, str]]:
         
         """Run the arXiv Tool."""
-        max_results = 3
+        max_results = 1
         base_url = "http://export.arxiv.org/api/query"
         params = {
             "search_query": f"all:{topic}",
