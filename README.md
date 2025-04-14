@@ -1,5 +1,7 @@
 # ExplAIn
 
+Created by Gabrielle Littlefair, Malini Williams, and Joshua Waha
+
 ## Project Idea and Overview
 
 ExplAIn is an intelligent learning assistant built using the Portia toolkit that transforms complex academic papers into structured, personalized learning experiences.
